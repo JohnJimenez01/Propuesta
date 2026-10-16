@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Una pregunta para ti ✨</title>
+<style>
+  :root {
+    --rosa: #ff6fa5;
+    --rosa-claro: #ffb6ce;
+    --morado: #a66cff;
+    --morado-suave: #c9a7ff;
+    --calido: #ffcf8f;
+    --texto: #5a2a4a;
+    --tarjeta: rgba(255, 255, 255, 0.82);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Segoe UI', 'Trebuchet MS', system-ui, sans-serif;
+    color: var(--texto);
+    min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(135deg, #ffd9e8 0%, #ffc2de 25%, #e9c4ff 55%, #ffe0c2 100%);
+    background-size: 300% 300%;
+    animation: fondoMovil 18s ease infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  @keyframes fondoMovil {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Capa de corazones y destellos flotantes */
+  #fondoDeco {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .flota {
+    position: absolute;
+    bottom: -40px;
+    font-size: 22px;
+    opacity: 0;
+    animation: subir linear infinite;
+    will-change: transform, opacity;
+  }
+
+  @keyframes subir {
+    0%   { transform: translateY(0) rotate(0deg) scale(0.8); opacity: 0; }
+    10%  { opacity: 0.9; }
+    90%  { opacity: 0.9; }
+    100% { transform: translateY(-115vh) rotate(360deg) scale(1.1); opacity: 0; }
+  }
+
+  /* Tarjeta central */
+  .tarjeta {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 440px;
+    background: var(--tarjeta);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 28px;
+    padding: 38px 30px;
+    box-shadow: 0 20px 60px rgba(166, 76, 140, 0.28), 0 0 0 1px rgba(255,255,255,0.5) inset;
+    text-align: center;
+    animation: aparecerTarjeta 0.9s cubic-bezier(.2,.9,.3,1.2) both;
+  }
+
+  @keyframes aparecerTarjeta {
+    from { opacity: 0; transform: translateY(30px) scale(0.94); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .corazon-top {
+    font-size: 48px;
+    display: inline-block;
+    animation: latido 1.4s ease-in-out infinite;
+    filter: drop-shadow(0 4px 10px rgba(255,111,165,0.5));
+  }
+
+  @keyframes latido {
+    0%, 100% { transform: scale(1); }
+    15% { transform: scale(1.2); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.15); }
+  }
+
+  .titulo {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 14px 0 6px;
+    background: linear-gradient(90deg, var(--rosa), var(--morado));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.3;
+  }
+
+  .dedicatoria {
+    font-size: 16px;
+    line-height: 1.65;
+    margin: 18px 0 8px;
+    color: #6b3557;
+    font-weight: 400;
+  }
+
+  /* Botones generales */
+  .btn {
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 700;
+    border-radius: 50px;
+    transition: transform 0.18s ease, box-shadow 0.25s ease, background 0.3s ease;
+    color: #fff;
+    outline: none;
+  }
+
+  .btn:active { transform: scale(0.96); }
+
+  .btn-principal {
+    background: linear-gradient(90deg, var(--rosa), var(--morado));
+    padding: 15px 30px;
+    font-size: 17px;
+    margin-top: 24px;
+    box-shadow: 0 10px 25px rgba(166, 76, 140, 0.4);
+  }
+
+  .btn-principal:hover { box-shadow: 0 14px 32px rgba(166, 76, 140, 0.55); transform: translateY(-2px); }
+
+  /* Pantallas (secciones) */
+  .pantalla { display: none; }
+  .pantalla.activa { display: block; animation: fadeIn 0.6s ease both; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Zona de botones Sí / No */
+  .zona-botones {
+    position: relative;
+    margin-top: 30px;
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    flex-wrap: wrap;
+  }
+
+  #btnSi {
+    background: linear-gradient(90deg, #ff5c9d, #ff3d7f);
+    padding: 15px 34px;
+    font-size: 18px;
+    box-shadow: 0 10px 25px rgba(255, 61, 127, 0.45);
+    transition: transform 0.25s cubic-bezier(.2,.9,.3,1.3), font-size 0.25s ease, padding 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  #btnSi:hover { transform: translateY(-2px) scale(1.04); }
+
+  #btnNo {
+    background: linear-gradient(90deg, #b0a4c7, #8f84a8);
+    padding: 15px 30px;
+    font-size: 17px;
+    box-shadow: 0 8px 18px rgba(80, 70, 100, 0.3);
+    position: relative;
+    z-index: 3;
+  }
+
+  /* Cuando el No empieza a huir se mueve SOLO dentro de la zona de botones */
+  #btnNo.huye {
+    position: absolute;
+    z-index: 5;
+    margin: 0;
+  }
+
+  /* Celebración */
+  .mensaje-final {
+    font-size: 16.5px;
+    line-height: 1.7;
+    color: #6b3557;
+    margin: 18px 0 6px;
+  }
+
+  .btn-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    background: linear-gradient(90deg, #25d366, #1ebe5a);
+    padding: 15px 28px;
+    font-size: 17px;
+    margin-top: 24px;
+    box-shadow: 0 10px 25px rgba(37, 211, 102, 0.45);
+    text-decoration: none;
+  }
+
+  .btn-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(37, 211, 102, 0.6); }
+
+  .nota {
+    font-size: 12.5px;
+    color: #9a7a90;
+    margin-top: 16px;
+    line-height: 1.5;
+  }
+
+  /* Corazones de celebración que caen */
+  .confeti {
+    position: fixed;
+    top: -40px;
+    font-size: 24px;
+    z-index: 40;
+    pointer-events: none;
+    animation: caer linear forwards;
+    will-change: transform;
+  }
+
+  @keyframes caer {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(540deg); opacity: 0.9; }
+  }
+
+  @media (max-width: 420px) {
+    .tarjeta { padding: 30px 22px; }
+    .titulo { font-size: 23px; }
+    .dedicatoria { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+  <div id="fondoDeco"></div>
+
+  <div class="tarjeta">
+
+    <!-- PANTALLA 1: Dedicatoria -->
+    <section id="pantalla1" class="pantalla activa">
+      <span class="corazon-top">💌</span>
+      <h1 class="titulo">Para mi niña</h1>
+      <p class="dedicatoria">
+      Hay personas que llegan a tu vida y la hacen más bonita sin darse cuenta, y tú eres una de ellas, mi amor. ❤️ Me encanta tu sonrisa, tu forma de ser y lo feliz que me haces. Amo compartir momentos contigo y seguir descubriendo cosas bonitas a tu lado. Ahora que somos novios, quiero seguir eligiéndote cada día, cuidarte y construir una historia llena de amor, risas y recuerdos hermosos. 🥹💖  
+      </p>
+      <button class="btn btn-principal" onclick="irAPregunta()">Tengo una pregunta para ti ✨</button>
+    </section>
+
+    <!-- PANTALLA 2: Pregunta + botones -->
+    <section id="pantalla2" class="pantalla">
+      <span class="corazon-top">💖</span>
+      <h1 class="titulo">¿Quieres ser mi novia? 💖</h1>
+      <div class="zona-botones" id="zonaBotones">
+        <button class="btn" id="btnSi" onclick="dijoQueSi()">Sí 💗</button>
+        <button class="btn" id="btnNo">No, mejor terminemos 🙈</button>
+      </div>
+    </section>
+
+    <!-- PANTALLA 3: Celebración -->
+    <section id="pantalla3" class="pantalla">
+      <span class="corazon-top">💑</span>
+      <h1 class="titulo">¡Dijiste que sí! 🎉</h1>
+      <p class="mensaje-final">
+        ¡Sabía que este momento sería especial! 💖 Me haces muy feliz, mi amor. Quiero seguir cuidándote, hacerte sonreír y crear muchos recuerdos bonitos contigo. 🥹❤️ Y bueno, JAJAJA, ¡ya tenemos dos relaciones! 😂💗 Así que si una se acaba, nos queda la otra de repuesto. 🤣 Aunque mi plan es que las dos duren para siempre. Te quiero muchísimo, mi niña. ¡Qué bonito es que seas mi novia, mi mejor amiga, mi amante, mi mujer, que lo seas todo para mi! 😘❤️
+      </p>
+      <a class="btn btn-whatsapp" id="linkWhatsapp" href="#" target="_blank" rel="noopener">
+        Enviar mi respuesta por WhatsApp 💌
+      </a>
+      <p class="nota">
+        Se abrirá WhatsApp con el mensaje ya escrito. Solo tienes que pulsar enviar 💕
+      </p>
+    </section>
+
+  </div>
+
+<script>
+  /* ====== Configuración WhatsApp ====== */
+  const NUMERO_WHATSAPP = "573232043421"; // formato internacional, sin + ni espacios
+  const MENSAJE = "Sí, quiero ser tu novia ❤️🥹";
+  document.getElementById("linkWhatsapp").href =
+    "https://wa.me/" + NUMERO_WHATSAPP + "?text=" + encodeURIComponent(MENSAJE);
+
+  /* ====== Navegación entre pantallas ====== */
+  function mostrarPantalla(id) {
+    document.querySelectorAll(".pantalla").forEach(p => p.classList.remove("activa"));
+    document.getElementById(id).classList.add("activa");
+  }
+
+  function irAPregunta() { mostrarPantalla("pantalla2"); }
+
+  /* ====== Fondo: corazones y destellos flotantes ====== */
+  (function generarFondo() {
+    const cont = document.getElementById("fondoDeco");
+    const simbolos = ["💖","💕","✨","💗","🌸","💓","⭐","💞"];
+    const cantidad = 26;
+    for (let i = 0; i < cantidad; i++) {
+      const el = document.createElement("span");
+      el.className = "flota";
+      el.textContent = simbolos[Math.floor(Math.random() * simbolos.length)];
+      el.style.left = Math.random() * 100 + "vw";
+      el.style.fontSize = (14 + Math.random() * 22) + "px";
+      el.style.animationDuration = (7 + Math.random() * 9) + "s";
+      el.style.animationDelay = (Math.random() * 10) + "s";
+      cont.appendChild(el);
+    }
+  })();
+
+  /* ====== Comportamiento botón NO ====== */
+  const btnNo = document.getElementById("btnNo");
+  const btnSi = document.getElementById("btnSi");
+  let escapes = 0;
+  let siFont = 18;   // tamaño inicial de fuente del Sí
+  let siPad = 34;    // padding horizontal inicial
+
+  const zona = document.getElementById("zonaBotones");
+
+  function escapar() {
+    // Al primer escape, soltar el No para moverlo SOLO dentro de la zona de botones
+    if (!btnNo.classList.contains("huye")) {
+      btnNo.classList.add("huye");
+    }
+
+    const margen = 6;
+    const ancho = btnNo.offsetWidth;
+    const alto = btnNo.offsetHeight;
+    // Límites = tamaño de la zona de botones (coordenadas relativas a la zona)
+    const maxX = Math.max(margen, zona.clientWidth - ancho - margen);
+    const maxY = Math.max(margen, zona.clientHeight - alto - margen);
+
+    // Posición del Sí relativa a la zona, para intentar no taparlo
+    const rSi = btnSi.getBoundingClientRect();
+    const rZona = zona.getBoundingClientRect();
+    const siX = rSi.left - rZona.left;
+    const siY = rSi.top - rZona.top;
+
+    let x, y, intentos = 0;
+    do {
+      x = Math.random() * (maxX - margen) + margen;
+      y = Math.random() * (maxY - margen) + margen;
+      intentos++;
+      var solapa = !(x + ancho < siX - 10 || x > siX + rSi.width + 10 ||
+                     y + alto < siY - 10 || y > siY + rSi.height + 10);
+    } while (solapa && intentos < 30);
+
+    btnNo.style.left = x + "px";
+    btnNo.style.top = y + "px";
+
+    // El Sí crece cada vez, cada vez más grande
+    escapes++;
+    siFont += 3;
+    siPad += 5;
+    btnSi.style.fontSize = siFont + "px";
+    btnSi.style.padding = "15px " + siPad + "px";
+    // No dejar que el Sí se salga de la tarjeta por los lados
+    btnSi.style.maxWidth = "100%";
+
+    // Pequeño efecto visual: chispa en la posición vieja
+    chispa();
+  }
+
+  function chispa() {
+    const s = document.createElement("span");
+    s.textContent = ["✨","💫","😅","🙈"][Math.floor(Math.random()*4)];
+    s.style.position = "fixed";
+    // Posición real del No en pantalla (su left/top son relativos a la zona)
+    const r = btnNo.getBoundingClientRect();
+    s.style.left = r.left + "px";
+    s.style.top = r.top + "px";
+    s.style.fontSize = "26px";
+    s.style.zIndex = 60;
+    s.style.pointerEvents = "none";
+    s.style.transition = "transform 0.6s ease, opacity 0.6s ease";
+    document.body.appendChild(s);
+    requestAnimationFrame(() => {
+      s.style.transform = "translateY(-40px) scale(1.4)";
+      s.style.opacity = "0";
+    });
+    setTimeout(() => s.remove(), 650);
+  }
+
+  // Escritorio: huye al acercar el mouse
+  btnNo.addEventListener("mouseenter", escapar);
+  // Por si alcanza a hacer clic igual
+  btnNo.addEventListener("click", function(e){ e.preventDefault(); escapar(); });
+  // Móvil: huye al intentar tocarlo (antes de completar el toque)
+  btnNo.addEventListener("touchstart", function(e){ e.preventDefault(); escapar(); }, { passive: false });
+
+  // Si cambia el tamaño, mantener el No dentro de la zona de botones
+  window.addEventListener("resize", function(){
+    if (btnNo.classList.contains("huye")) {
+      const ancho = btnNo.offsetWidth, alto = btnNo.offsetHeight;
+      const maxX = Math.max(6, zona.clientWidth - ancho - 6);
+      const maxY = Math.max(6, zona.clientHeight - alto - 6);
+      let x = Math.min(parseFloat(btnNo.style.left) || 0, maxX);
+      let y = Math.min(parseFloat(btnNo.style.top) || 0, maxY);
+      btnNo.style.left = Math.max(6, x) + "px";
+      btnNo.style.top = Math.max(6, y) + "px";
+    }
+  });
+
+  /* ====== Botón SÍ ====== */
+  function dijoQueSi() {
+    // El No desaparece SOLO al confirmar el Sí (ya terminó la interacción).
+    // Durante toda la pregunta el No siempre está visible y huyendo.
+    btnNo.style.display = "none";
+    lluviaCorazones();
+    setTimeout(() => mostrarPantalla("pantalla3"), 400);
+  }
+
+  function lluviaCorazones() {
+    const simbolos = ["💖","💕","❤️","💗","✨","🎉","💞","🌹"];
+    const total = 60;
+    for (let i = 0; i < total; i++) {
+      setTimeout(() => {
+        const c = document.createElement("span");
+        c.className = "confeti";
+        c.textContent = simbolos[Math.floor(Math.random() * simbolos.length)];
+        c.style.left = Math.random() * 100 + "vw";
+        c.style.fontSize = (18 + Math.random() * 22) + "px";
+        c.style.animationDuration = (2.5 + Math.random() * 2.5) + "s";
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 5500);
+      }, i * 60);
+    }
+  }
+</script>
+</body>
+</html>
